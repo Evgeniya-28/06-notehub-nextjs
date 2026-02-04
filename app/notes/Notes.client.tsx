@@ -1,13 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-  hydrate,
-  DehydratedState,
-} from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
 import { fetchNotes, FetchNotesResponse } from "@/lib/api";
 import SearchBox from "@/components/SearchBox/SearchBox";
@@ -19,37 +13,12 @@ import css from "./NotesPage.module.css";
 
 const PER_PAGE = 12;
 
-interface NotesClientProps {
-  dehydratedState?: DehydratedState;
-}
-
-export default function NotesClient({ dehydratedState }: NotesClientProps) {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 1000 * 60,
-        retry: 1,
-        refetchOnWindowFocus: false,
-      },
-    },
-  });
-
-  if (dehydratedState) {
-    hydrate(queryClient, dehydratedState);
-  }
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <NotesContent />
-    </QueryClientProvider>
-  );
-}
-
-function NotesContent() {
+export default function NotesClient() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [debouncedSearch] = useDebounce(search, 500);
+
   const handleSearchChange = (value: string) => {
     setSearch(value);
     setPage(1);
